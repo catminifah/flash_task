@@ -1,64 +1,62 @@
 import express from 'express';
 import { createClient } from 'redis';
+import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
 app.use(express.json());
 
 const client = createClient({
-  url: 'redis://default:bcTU5KogqBFQC4pAtthk0ltstOaO8i7Z@redis-16650.c305.ap-south-1-1.ec2.redns.redis-cloud.com:16650'
+  url: process.env.REDIS_URL,
+  password: process.env.REDIS_PASSWORD,
 });
 
 client.on('error', (err) => console.log('Redis Client Error', err));
 
 await client.connect();
 
-await client.sendCommand(['REDISQL.CREATE_DB', 'DB']);
-
+// GET all tasks
 app.get('/tasks', async (req, res) => {
   try {
-    const result = await client.sendCommand([
-      'REDISQL.EXEC',
-      'DB',
-      'SELECT * FROM tasks',
-    ]);
-    res.json(result);
+    const keys = await client.keys('task:*');
+    const tasks = [];
+    for (const key of keys) {
+      const task = await client.hGetAll(key);
+      tasks.push({ id: key.replace('task:', ''), ...task });
+    }
+    res.json(tasks);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// CREATE task
 app.post('/tasks', async (req, res) => {
   try {
-    const { id, title, description, created_at } = req.body;
-    const sql = `INSERT INTO tasks VALUES ('${id}', '${title}', '${description}', '${created_at}')`;
-    await client.sendCommand(['REDISQL.EXEC', 'DB', sql]);
-    res.status(201).send('Task added');
+    const id = uuidv4();
+    const { title, description } = req.body;
+    const created_at = new Date().toISOString();
+
+    await client.hSet(`task:${id}`, {
+      title,
+      description,
+      created_at,
+    });
+
+    res.status(201).json({ id, title, description, created_at });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// DELETE task
 app.delete('/tasks/:id', async (req, res) => {
   try {
-    const sql = `DELETE FROM tasks WHERE id = '${req.params.id}'`;
-    await client.sendCommand(['REDISQL.EXEC', 'DB', sql]);
+    await client.del(`task:${req.params.id}`);
     res.send('Task deleted');
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
-
-async function createTable() {
-  const createTableSQL = `CREATE TABLE IF NOT EXISTS tasks (
-    id TEXT PRIMARY KEY,
-    title TEXT,
-    description TEXT,
-    created_at TEXT
-  )`;
-  await client.sendCommand(['REDISQL.EXEC', 'DB', createTableSQL]);
-}
-
-createTable();
 
 app.listen(3000, () => {
   console.log('Backend API running on http://localhost:3000');
