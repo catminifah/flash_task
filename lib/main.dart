@@ -12,6 +12,7 @@ class FlashTaskApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'FlashTask',
       theme: ThemeData(primarySwatch: Colors.blue),
       home: const HomePage(),

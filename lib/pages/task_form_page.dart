@@ -1,3 +1,5 @@
+import 'package:flash_task/widgets/gradient_background.dart';
+import 'package:flash_task/widgets/gradient_outlineInput_border.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import '../models/task_model.dart';
@@ -107,102 +109,317 @@ class _TaskFormPageState extends State<TaskFormPage> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.task != null;
-    return Scaffold(
-      appBar: AppBar(title: Text(isEdit ? 'Edit Task' : 'Add Task')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (v) =>
-                    v == null || v.trim().isEmpty ? 'Please enter title' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 4,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedTag,
-                      items: [null, ..._tags].map((t) {
-                        return DropdownMenuItem<String>(
-                          value: t,
-                          child: Text(t ?? 'No tag'),
-                        );
-                      }).toList(),
-                      onChanged: (v) => setState(() => _selectedTag = v),
-                      decoration: const InputDecoration(
-                        labelText: 'Tag',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: _selectedPriority,
-                      items: [null, ..._priorities].map((p) {
-                        return DropdownMenuItem<String>(
-                          value: p,
-                          child: Text(p ?? 'No priority'),
-                        );
-                      }).toList(),
-                      onChanged: (v) => setState(() => _selectedPriority = v),
-                      decoration: const InputDecoration(
-                        labelText: 'Priority',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: Text(isEdit ? 'Edit Task' : 'Add Task'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.white,
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.85),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _pickDueDate,
-                      icon: const Icon(Icons.calendar_today),
-                      label: Text(
-                        _dueDate == null
-                            ? 'Set due date'
-                            : _dueDate!.toLocal().toString(),
+              padding: const EdgeInsets.all(16),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _titleController,
+                      decoration: InputDecoration(
+                        label: ShaderMask(
+                          shaderCallback: (bounds) =>
+                              LinearGradient(
+                                colors: [
+                                  Color(0xFF8E7DBE),
+                                  Color(0xFF8E7DBE),
+                                  Color(0xFF8E7DBE),
+                                  Color(0xFF8E7DBE),
+                                ],
+                              ).createShader(
+                                Rect.fromLTWH(
+                                  0,
+                                  0,
+                                  bounds.width,
+                                  bounds.height,
+                                ),
+                              ),
+                          child: const Text(
+                            'Title',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        border: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFF7CFD8),
+                              Color(0xFFF4F8D3),
+                              Color(0xFFA6D6D6),
+                              Color(0xFF8E7DBE),
+                            ],
+                          ),
+                        ),
+                        enabledBorder: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFF7CFD8),
+                              Color(0xFFF4F8D3),
+                              Color(0xFFA6D6D6),
+                              Color(0xFF8E7DBE),
+                            ],
+                          ),
+                        ),
+                        focusedBorder: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF8E7DBE),
+                              Color(0xFFA6D6D6),
+                              Color(0xFFF4F8D3),
+                              Color(0xFFF7CFD8),
+                            ],
+                          ),
+                        ),
+                      ),
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'Please enter title'
+                          : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: InputDecoration(
+                        label: ShaderMask(
+                          shaderCallback: (bounds) =>
+                              LinearGradient(
+                                colors: [
+                                  Color(0xFF8E7DBE),
+                                  Color(0xFF8E7DBE),
+                                  Color(0xFF8E7DBE),
+                                  Color(0xFF8E7DBE),
+                                ],
+                              ).createShader(
+                                Rect.fromLTWH(
+                                  0,
+                                  0,
+                                  bounds.width,
+                                  bounds.height,
+                                ),
+                              ),
+                          child: const Text(
+                            'Description',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                        border: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [Color(0xFF8E7DBE)],
+                          ),
+                        ),
+                        enabledBorder: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFF7CFD8),
+                              Color(0xFFF4F8D3),
+                              Color(0xFFA6D6D6),
+                              Color(0xFF8E7DBE),
+                            ],
+                          ),
+                        ),
+                        focusedBorder: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF8E7DBE),
+                              Color(0xFFA6D6D6),
+                              Color(0xFFF4F8D3),
+                              Color(0xFFF7CFD8),
+                            ],
+                          ),
+                        ),
+                      ),
+                      validator: (v) => v == null || v.trim().isEmpty
+                          ? 'Please enter description'
+                          : null,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedTag,
+                            items: [null, ..._tags].map((t) {
+                              return DropdownMenuItem<String>(
+                                value: t,
+                                child: Text(t ?? 'No tag'),
+                              );
+                            }).toList(),
+                            onChanged: (v) => setState(() => _selectedTag = v),
+                            decoration: InputDecoration(
+                              labelText: 'Tag',
+                              labelStyle: TextStyle(color: Color(0xFF8E7DBE)),
+                              border: GradientOutlineInputBorder(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFF7CFD8),
+                                    Color(0xFFF4F8D3),
+                                    Color(0xFFA6D6D6),
+                                    Color(0xFF8E7DBE),
+                                  ],
+                                ),
+                              ),
+                              enabledBorder: GradientOutlineInputBorder(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFF7CFD8),
+                                    Color(0xFFF4F8D3),
+                                    Color(0xFFA6D6D6),
+                                    Color(0xFF8E7DBE),
+                                  ],
+                                ),
+                              ),
+                              focusedBorder: GradientOutlineInputBorder(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF8E7DBE),
+                                    Color(0xFFA6D6D6),
+                                    Color(0xFFF4F8D3),
+                                    Color(0xFFF7CFD8),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedPriority,
+                            items: [null, ..._priorities].map((p) {
+                              return DropdownMenuItem<String>(
+                                value: p,
+                                child: Text(p ?? 'No priority'),
+                              );
+                            }).toList(),
+                            onChanged: (v) =>
+                                setState(() => _selectedPriority = v),
+                            decoration: InputDecoration(
+                              labelText: 'Priority',
+                              labelStyle: TextStyle(color: Color(0xFF8E7DBE)),
+                              border: GradientOutlineInputBorder(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFF7CFD8),
+                                    Color(0xFFF4F8D3),
+                                    Color(0xFFA6D6D6),
+                                    Color(0xFF8E7DBE),
+                                  ],
+                                ),
+                              ),
+                              enabledBorder: GradientOutlineInputBorder(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFFF7CFD8),
+                                    Color(0xFFF4F8D3),
+                                    Color(0xFFA6D6D6),
+                                    Color(0xFF8E7DBE),
+                                  ],
+                                ),
+                              ),
+                              focusedBorder: GradientOutlineInputBorder(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF8E7DBE),
+                                    Color(0xFFA6D6D6),
+                                    Color(0xFFF4F8D3),
+                                    Color(0xFFF7CFD8),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            child: OutlinedButton.icon(
+                              onPressed: _pickDueDate,
+                              icon: const Icon(Icons.calendar_today),
+                              label: Text(
+                                _dueDate == null
+                                    ? 'Set due date'
+                                    : _dueDate!.toLocal().toString(),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF8E7DBE),
+                                side: BorderSide(
+                                  color: Color(0xFF8E7DBE).withOpacity(0.5),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (_dueDate != null)
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => setState(() => _dueDate = null),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          backgroundColor: const Color(0xFF8E7DBE),
+                        ),
+                        onPressed: _isSaving ? null : _saveTask,
+                        child: _isSaving
+                            ? const CircularProgressIndicator()
+                            : Text(
+                                isEdit ? 'Update' : 'Add',
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                       ),
                     ),
-                  ),
-                  if (_dueDate != null)
-                    IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () => setState(() => _dueDate = null),
-                    ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isSaving ? null : _saveTask,
-                  child: _isSaving
-                      ? const CircularProgressIndicator()
-                      : Text(isEdit ? 'Update' : 'Add'),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),

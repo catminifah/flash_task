@@ -7,7 +7,7 @@ class TaskItem extends StatelessWidget {
   final Task task;
   final VoidCallback onRefresh;
 
-  const TaskItem({super.key, required this.task, required this.onRefresh});
+  TaskItem({super.key, required this.task, required this.onRefresh});
 
   Color _priorityColor(String? p) {
     switch (p) {
@@ -21,6 +21,15 @@ class TaskItem extends StatelessWidget {
         return Colors.grey;
     }
   }
+
+  final List<Color> noteColors = [
+    Color(0xFFEE6F57),
+    Color(0xFFF3A712),
+    Color(0xFF00A8E8),
+    Color(0xFFA2D2FF),
+    Color(0xFFFBC4AB),
+    Color(0xFFD0E6A5),
+  ];
 
   String _formatDue(DateTime? d) {
     if (d == null) return 'No due';
@@ -161,13 +170,20 @@ class TaskItem extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const Spacer(),
-                  Text(
-                    _formatDue(task.dueDate),
-                    style: const TextStyle(fontSize: 12),
-                  ),
                 ],
               ),
+              const SizedBox(height: 4),
+              if (task.dueDate != null)
+                Padding(
+                  padding: const EdgeInsets.only(right: 20),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      _formatDue(task.dueDate),
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                ),
             ],
           ),
           trailing: IconButton(

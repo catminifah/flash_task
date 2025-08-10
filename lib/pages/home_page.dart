@@ -1,3 +1,4 @@
+import 'package:flash_task/widgets/gradient_background.dart';
 import 'package:flutter/material.dart';
 import '../models/task_model.dart';
 import '../services/api_service.dart';
@@ -126,41 +127,56 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('FlashTask')),
-      body: FutureBuilder<List<Task>>(
-        future: _tasksFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting)
-            return const Center(child: CircularProgressIndicator());
-          if (snapshot.hasError)
-            return Center(child: Text('Error: ${snapshot.error}'));
-          final tasks = snapshot.data ?? [];
-          if (tasks.isEmpty)
-            return Center(
-              child: Text(
-                'No tasks yet. Add one!',
-                style: TextStyle(color: Colors.grey.shade600),
+    return GradientBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: const Text('FlashTask'),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          centerTitle: true,
+          titleTextStyle: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            color: Colors.white,
+          ),
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: FutureBuilder<List<Task>>(
+          future: _tasksFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting)
+              return const Center(child: CircularProgressIndicator());
+            if (snapshot.hasError)
+              return Center(child: Text('Error: ${snapshot.error}'));
+            final tasks = snapshot.data ?? [];
+            if (tasks.isEmpty)
+              return Center(
+                child: Text(
+                  'No tasks yet. Add one!',
+                  style: TextStyle(color: Colors.grey.shade600),
+                ),
+              );
+            return RefreshIndicator(
+              onRefresh: _refreshTasks,
+              child: ListView(
+                children: [
+                  _buildHeader(tasks),
+                  const SizedBox(height: 8),
+                  ...tasks
+                      .map((t) => TaskItem(task: t, onRefresh: _refreshTasks))
+                      .toList(),
+                  const SizedBox(height: 80),
+                ],
               ),
             );
-          return RefreshIndicator(
-            onRefresh: _refreshTasks,
-            child: ListView(
-              children: [
-                _buildHeader(tasks),
-                const SizedBox(height: 8),
-                ...tasks
-                    .map((t) => TaskItem(task: t, onRefresh: _refreshTasks))
-                    .toList(),
-                const SizedBox(height: 80),
-              ],
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _openAdd,
-        child: const Icon(Icons.add),
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _openAdd,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
