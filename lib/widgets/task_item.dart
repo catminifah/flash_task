@@ -9,12 +9,32 @@ class TaskItem extends StatelessWidget {
 
   const TaskItem({super.key, required this.task, required this.onRefresh});
 
+  Color _priorityColor(String? p) {
+    switch (p) {
+      case 'High':
+        return Colors.redAccent;
+      case 'Medium':
+        return Colors.orangeAccent;
+      case 'Low':
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  String _formatDue(DateTime? d) {
+    if (d == null) return 'No due';
+    final now = DateTime.now();
+    if (d.isBefore(now))
+      return 'Overdue ${d.toLocal().toString().split('.')[0]}';
+    return d.toLocal().toString().split('.')[0];
+  }
+
   void _deleteTask(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
+    final confirm = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm Delete'),
-        content: const Text('Are you sure you want to delete this task?'),
+      builder: (_) => AlertDialog(
+        title: const Text('Confirm delete'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -27,18 +47,17 @@ class TaskItem extends StatelessWidget {
         ],
       ),
     );
-
-    if (confirmed == true) {
+    if (confirm == true) {
       try {
         await ApiService().deleteTask(task.id);
         onRefresh();
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Task deleted')));
+        ).showSnackBar(const SnackBar(content: Text('Deleted')));
       } catch (e) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Failed to delete task: $e')));
+        ).showSnackBar(SnackBar(content: Text('Delete failed: $e')));
       }
     }
   }
@@ -48,21 +67,115 @@ class TaskItem extends StatelessWidget {
       context,
       MaterialPageRoute(builder: (_) => TaskFormPage(task: task)),
     );
-    if (result == true) {
-      onRefresh();
-    }
+    if (result == true) onRefresh();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(task.title),
-      subtitle: Text(task.description),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete),
-        onPressed: () => _deleteTask(context),
+    return Dismissible(
+      key: ValueKey(task.id),
+      background: Container(
+        color: Colors.redAccent,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete, color: Colors.white),
       ),
-      onTap: () => _editTask(context),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) async {
+        final ok = await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Delete?'),
+            content: const Text('Are you sure to delete this task?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Delete'),
+              ),
+            ],
+          ),
+        );
+        return ok == true;
+      },
+      onDismissed: (_) =>
+          ApiService().deleteTask(task.id).then((_) => onRefresh()),
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ListTile(
+          onTap: () => _editTask(context),
+          title: Text(
+            task.title,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (task.description.isNotEmpty)
+                Text(
+                  task.description,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  if (task.tag != null && task.tag!.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        task.tag!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _priorityColor(task.priority).withOpacity(.15),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      task.priority ?? 'No priority',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: _priorityColor(task.priority),
+                      ),
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    _formatDue(task.dueDate),
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () => _editTask(context),
+          ),
+        ),
+      ),
     );
   }
 }
