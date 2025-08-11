@@ -81,6 +81,8 @@ class TaskItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final randomColor = (noteColors..shuffle()).first;
+
     return Dismissible(
       key: ValueKey(task.id),
       background: Container(
@@ -113,6 +115,7 @@ class TaskItem extends StatelessWidget {
       onDismissed: (_) =>
           ApiService().deleteTask(task.id).then((_) => onRefresh()),
       child: Card(
+        color: (noteColors..shuffle()).first,
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -120,7 +123,10 @@ class TaskItem extends StatelessWidget {
           onTap: () => _editTask(context),
           title: Text(
             task.title,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,6 +136,7 @@ class TaskItem extends StatelessWidget {
                   task.description,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Colors.white),
                 ),
               const SizedBox(height: 6),
               Row(
@@ -141,14 +148,14 @@ class TaskItem extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.blue.shade50,
+                        color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         task.tag!,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.blueAccent,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -159,35 +166,31 @@ class TaskItem extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: _priorityColor(task.priority).withOpacity(.15),
+                      color: Colors.white.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
                       task.priority ?? 'No priority',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: _priorityColor(task.priority),
-                      ),
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 4),
               if (task.dueDate != null)
-                Padding(
-                  padding: const EdgeInsets.only(right: 20),
-                  child: Align(
-                    alignment: Alignment.centerRight,
-                    child: Text(
+                Row(
+                  children: [
+                    const Spacer(),
+                    Text(
                       _formatDue(task.dueDate),
-                      style: const TextStyle(fontSize: 12),
+                      style: const TextStyle(fontSize: 12, color: Colors.white),
                     ),
-                  ),
+                  ],
                 ),
             ],
           ),
           trailing: IconButton(
-            icon: const Icon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert, color: Colors.white),
             onPressed: () => _editTask(context),
           ),
         ),

@@ -4,6 +4,7 @@ import '../models/task_model.dart';
 import '../services/api_service.dart';
 import '../widgets/task_item.dart';
 import 'task_form_page.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -173,9 +174,21 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _openAdd,
-          child: const Icon(Icons.add),
+        floatingActionButton: SpeedDial(
+          icon: Icons.add,
+          activeIcon: Icons.close,
+          backgroundColor: Colors.white,
+          foregroundColor: Color(0xFF8E7DBE),
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.note_add),
+              label: 'new task',
+              onTap: _openAdd,
+              backgroundColor: Color(0xFF8E7DBE),
+              labelStyle: const TextStyle(color: Color(0xFF8E7DBE)),
+              foregroundColor: Colors.white,
+            ),
+          ],
         ),
       ),
     );
