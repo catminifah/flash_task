@@ -6,6 +6,7 @@ class Task {
   final String? tag;
   final String? priority;
   final DateTime? dueDate;
+  final String status;
 
   Task({
     required this.id,
@@ -15,6 +16,7 @@ class Task {
     this.tag,
     this.priority,
     this.dueDate,
+    this.status = 'To Do',
   });
 
   factory Task.fromJson(Map<String, dynamic> json) {
@@ -28,6 +30,7 @@ class Task {
       dueDate: json['due_date'] == null || json['due_date'] == ''
           ? null
           : DateTime.tryParse(json['due_date'] as String),
+      status: json['status'] as String? ?? 'To Do',
     );
   }
 
@@ -40,6 +43,7 @@ class Task {
       'tag': tag ?? '',
       'priority': priority ?? '',
       'due_date': dueDate?.toIso8601String() ?? '',
+      'status': status,
     };
   }
 }

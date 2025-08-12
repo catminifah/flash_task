@@ -23,7 +23,9 @@ class _TaskFormPageState extends State<TaskFormPage> {
   String? _selectedPriority;
   DateTime? _dueDate;
   bool _isSaving = false;
+  String _selectedStatus = 'To Do';
 
+  final List<String> _statuses = ['To Do', 'In Progress', 'Done'];
   final List<String> _tags = ['Work', 'Study', 'Personal', 'Idea'];
   final List<String> _priorities = ['High', 'Medium', 'Low'];
 
@@ -37,6 +39,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
     _selectedTag = widget.task?.tag;
     _selectedPriority = widget.task?.priority;
     _dueDate = widget.task?.dueDate;
+    _selectedStatus = widget.task?.status ?? 'To Do';
   }
 
   @override
@@ -86,6 +89,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
       tag: _selectedTag,
       priority: _selectedPriority,
       dueDate: _dueDate,
+      status: _selectedStatus,
     );
 
     try {
@@ -267,6 +271,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
                         Expanded(
                           child: DropdownButtonFormField<String>(
                             value: _selectedTag,
+                            isExpanded: true,
                             items: [null, ..._tags].map((t) {
                               return DropdownMenuItem<String>(
                                 value: t,
@@ -391,6 +396,59 @@ class _TaskFormPageState extends State<TaskFormPage> {
                             onPressed: () => setState(() => _dueDate = null),
                           ),
                       ],
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: _selectedStatus,
+                      items: _statuses
+                          .map(
+                            (status) => DropdownMenuItem(
+                              value: status,
+                              child: Text(status),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() {
+                            _selectedStatus = val;
+                          });
+                        }
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Status',
+                        labelStyle: TextStyle(color: Color(0xFF8E7DBE)),
+                        border: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFF7CFD8),
+                              Color(0xFFF4F8D3),
+                              Color(0xFFA6D6D6),
+                              Color(0xFF8E7DBE),
+                            ],
+                          ),
+                        ),
+                        enabledBorder: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFFF7CFD8),
+                              Color(0xFFF4F8D3),
+                              Color(0xFFA6D6D6),
+                              Color(0xFF8E7DBE),
+                            ],
+                          ),
+                        ),
+                        focusedBorder: GradientOutlineInputBorder(
+                          gradient: const LinearGradient(
+                            colors: [
+                              Color(0xFF8E7DBE),
+                              Color(0xFFA6D6D6),
+                              Color(0xFFF4F8D3),
+                              Color(0xFFF7CFD8),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     SizedBox(

@@ -11,6 +11,7 @@ class ApiService {
   }
 
   Future<void> addTask(Task task) async {
+    print('POST data: ${task.toJson()}');
     await _dio.post('/tasks', data: task.toJson());
   }
 
@@ -21,4 +22,6 @@ class ApiService {
   Future<void> deleteTask(String id) async {
     await _dio.delete('/tasks/$id');
   }
+
+  Future<void> createTask(Task task) async {}
 }
