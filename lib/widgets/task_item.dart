@@ -174,18 +174,24 @@ class TaskItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Align(
-              alignment: Alignment.topRight,
-              child: Text(
-                _formatDue(task.dueDate),
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueAccent,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  _formatDue(task.dueDate),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blueAccent,
+                  ),
                 ),
-              ),
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.white, size: 15),
+                  onPressed: () => _editTask(context),
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
+            //const SizedBox(height: 6),
             // Task
             Text(
               task.title,
@@ -197,7 +203,7 @@ class TaskItem extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 4),
+            //const SizedBox(height: 4),
             // Description
             if (task.description.isNotEmpty)
               SizedBox(
@@ -268,10 +274,6 @@ class TaskItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.white),
-                  onPressed: () => _editTask(context),
                 ),
               ],
             ),

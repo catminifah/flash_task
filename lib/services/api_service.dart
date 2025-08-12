@@ -11,8 +11,9 @@ class ApiService {
   }
 
   Future<void> addTask(Task task) async {
-    print('POST data: ${task.toJson()}');
-    await _dio.post('/tasks', data: task.toJson());
+    final jsonData = task.toJson();
+    print('POST data: $jsonData');
+    await _dio.post('/tasks', data: jsonData);
   }
 
   Future<void> updateTask(Task task) async {

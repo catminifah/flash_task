@@ -6,7 +6,7 @@ class Task {
   final String? tag;
   final String? priority;
   final DateTime? dueDate;
-  final String status;
+  final String? status;
 
   Task({
     required this.id,
@@ -30,7 +30,7 @@ class Task {
       dueDate: json['due_date'] == null || json['due_date'] == ''
           ? null
           : DateTime.tryParse(json['due_date'] as String),
-      status: json['status'] as String? ?? 'To Do',
+      status: json['status'],
     );
   }
 

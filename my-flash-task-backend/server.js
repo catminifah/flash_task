@@ -34,6 +34,7 @@ async function start() {
           tag: data.tag || null,
           priority: data.priority || null,
           due_date: data.due_date || null,
+          status: data.status || 'To Do',
         });
       }
       res.json(tasks);
@@ -53,6 +54,7 @@ async function start() {
         tag = '',
         priority = '',
         due_date = '',
+        status = 'To Do',
       } = req.body;
 
       await client.hSet(`task:${id}`, {
@@ -62,15 +64,16 @@ async function start() {
         tag,
         priority,
         due_date,
+        status,
       });
 
-      res.status(201).json({ id, title, description, created_at, tag, priority, due_date });
+      res.status(201).json({ id, title, description, created_at, tag, priority, due_date, status });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  // UPDATE task (PUT)
+  // UPDATE task
   app.put('/tasks/:id', async (req, res) => {
     try {
       const id = req.params.id;
@@ -84,6 +87,7 @@ async function start() {
         tag,
         priority,
         due_date,
+        status,
       } = req.body;
 
       const updateObj = {};
@@ -92,6 +96,7 @@ async function start() {
       if (tag !== undefined) updateObj.tag = tag;
       if (priority !== undefined) updateObj.priority = priority;
       if (due_date !== undefined) updateObj.due_date = due_date;
+      if (status !== undefined) updateObj.status = status;
 
       if (Object.keys(updateObj).length > 0) {
         await client.hSet(key, updateObj);
@@ -106,13 +111,14 @@ async function start() {
         tag: data.tag,
         priority: data.priority,
         due_date: data.due_date,
+        status: data.status || 'To Do',
       });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
   });
 
-  // DELETE
+  // DELETE task
   app.delete('/tasks/:id', async (req, res) => {
     try {
       await client.del(`task:${req.params.id}`);
