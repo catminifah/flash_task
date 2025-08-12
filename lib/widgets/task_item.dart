@@ -174,22 +174,37 @@ class TaskItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  _formatDue(task.dueDate),
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blueAccent,
+            Container(
+              height: 30,
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      _formatDue(task.dueDate),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blueAccent,
+                      ),
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.white, size: 15),
-                  onPressed: () => _editTask(context),
-                ),
-              ],
+                  Positioned(
+                    bottom: -4,
+                    right: -13,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                        size: 15,
+                      ),
+                      onPressed: () => _editTask(context),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(),
+                    ),
+                  ),
+                ],
+              ),
             ),
             //const SizedBox(height: 6),
             // Task
@@ -219,11 +234,14 @@ class TaskItem extends StatelessWidget {
             DropdownButton<String>(
               dropdownColor: Colors.white,
               value: task.status,
-              items: [
-                'To Do',
-                'In Progress',
-                'Done',
-              ].map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
+              items: ['To Do', 'In Progress', 'Done']
+                  .map(
+                    (s) => DropdownMenuItem(
+                      value: s,
+                      child: Text(s, style: TextStyle(color: Colors.black38)),
+                    ),
+                  )
+                  .toList(),
               onChanged: (val) {
                 if (val != null) {
                   onStatusChange(val);
